@@ -223,3 +223,7 @@ export function getEventById(id: string): IslamicEvent | undefined {
 export function getAllEventIds(): string[] {
   return islamicEvents.map((event) => event.id)
 }
+
+export function getEventsByMonth(monthNumber: number): IslamicEvent[] {
+  return islamicEvents.filter((event) => event.month === monthNumber)
+}
