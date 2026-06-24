@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
+import Link from "next/link"
 import { HijriMonth, YearProgress } from "@/types"
 
 interface IslamicYearJourneyProps {
@@ -13,19 +14,21 @@ interface IslamicYearJourneyProps {
 function MonthCard({ month, isCurrent }: { month: HijriMonth; isCurrent: boolean }) {
   if (isCurrent) {
     return (
-      <div className="glass-gold rounded-xl px-4 py-3">
-        <p className="text-xs text-[#c9a84c] font-medium mb-0.5">We are here</p>
-        <p className="font-heading text-lg sm:text-xl text-foreground">{month.name}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{month.arabicName}</p>
-      </div>
+      <Link href={`/months/${month.number}`} className="block">
+        <div className="glass-gold rounded-xl px-4 py-3 group hover:bg-white/[0.06] transition-all duration-300">
+          <p className="text-xs text-[#c9a84c] font-medium mb-0.5">We are here</p>
+          <p className="font-heading text-lg sm:text-xl text-foreground group-hover:text-[#c9a84c] transition-colors">{month.name}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{month.arabicName}</p>
+        </div>
+      </Link>
     )
   }
 
   return (
-    <>
-      <p className="font-heading text-base sm:text-lg text-foreground">{month.name}</p>
+    <Link href={`/months/${month.number}`} className="group inline-block">
+      <p className="font-heading text-base sm:text-lg text-foreground group-hover:text-[#c9a84c] transition-colors">{month.name}</p>
       <p className="text-xs text-muted-foreground mt-0.5">{month.arabicName}</p>
-    </>
+    </Link>
   )
 }
 
