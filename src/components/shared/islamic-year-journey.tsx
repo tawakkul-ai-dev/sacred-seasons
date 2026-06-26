@@ -25,9 +25,11 @@ function MonthCard({ month, isCurrent }: { month: HijriMonth; isCurrent: boolean
   }
 
   return (
-    <Link href={`/months/${month.number}`} className="group inline-block">
-      <p className="font-heading text-base sm:text-lg text-foreground group-hover:text-[#c9a84c] transition-colors">{month.name}</p>
-      <p className="text-xs text-muted-foreground mt-0.5">{month.arabicName}</p>
+    <Link href={`/months/${month.number}`}>
+      <div className="rounded-xl px-4 py-3 group -mx-4 hover:bg-white/[0.04] transition-all duration-300">
+        <p className="font-heading text-base sm:text-lg text-foreground group-hover:text-[#c9a84c] transition-colors">{month.name}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{month.arabicName}</p>
+      </div>
     </Link>
   )
 }
