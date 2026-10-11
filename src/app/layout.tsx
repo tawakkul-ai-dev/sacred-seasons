@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { DM_Sans, Playfair_Display, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
+import { PwaControls } from "@/components/shared/pwa-controls"
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -20,6 +21,20 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  applicationName: "Sacred Seasons",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Sacred Seasons",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
+  },
   metadataBase: new URL("https://sacred-seasons.vercel.app"),
   title: "Sacred Seasons | The Islamic Year, Alive",
   description:
@@ -52,7 +67,10 @@ export default function RootLayout({
       className={`${dmSans.variable} ${playfair.variable} ${jetbrains.variable} dark h-full`}
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <PwaControls />
+      </body>
     </html>
   )
 }
