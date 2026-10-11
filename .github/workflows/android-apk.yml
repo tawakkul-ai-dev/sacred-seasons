@@ -81,7 +81,7 @@ jobs:
           fi
           export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/sacred-seasons-release.p12"
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
-          gradle --project-dir android --no-daemon :app:assembleRelease
+          gradle --project-dir android --no-daemon :app:verifyReleaseSigning :app:assembleRelease
           APK="android/app/build/outputs/apk/release/app-release.apk"
           cp "$APK" "$RUNNER_TEMP/sacred-seasons.apk"
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
