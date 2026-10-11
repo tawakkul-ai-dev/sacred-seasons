@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Moon, CalendarDays, Sparkles, BookOpen, Info, Menu, X } from "lucide-react"
 
@@ -20,14 +21,14 @@ export function Navigation() {
       <div className="absolute inset-0 bg-[#050814]/70 backdrop-blur-xl border-b border-white/[0.06]" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <a href="/" className="flex items-center gap-2 text-foreground">
+          <Link href="/" className="flex items-center gap-2 text-foreground">
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#c9a84c] to-[#8a7a3a] flex items-center justify-center">
               <Moon className="w-4 h-4 text-[#050814]" />
             </div>
             <span className="font-heading text-lg tracking-wide hidden sm:inline">
               Sacred Seasons
             </span>
-          </a>
+          </Link>
 
           <div className="hidden md:flex items-center gap-1">
             {links.map((link) => (
