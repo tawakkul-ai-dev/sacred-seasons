@@ -14,6 +14,8 @@ export function PwaControls() {
   const [isOffline, setIsOffline] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
   const [isIos, setIsIos] = useState(false)
+  const [isAndroid, setIsAndroid] = useState(false)
+  const [isNativeApp, setIsNativeApp] = useState(false)
 
   useEffect(() => {
     const standalone = window.matchMedia("(display-mode: standalone)").matches
@@ -21,6 +23,8 @@ export function PwaControls() {
     queueMicrotask(() => {
       setIsInstalled(standalone)
       setIsIos(/iphone|ipad|ipod/i.test(window.navigator.userAgent))
+      setIsAndroid(/android/i.test(window.navigator.userAgent))
+      setIsNativeApp(/SacredSeasonsAndroid/i.test(window.navigator.userAgent))
       setIsOffline(!navigator.onLine)
     })
 
@@ -71,7 +75,7 @@ export function PwaControls() {
           You’re offline. Dates and event details may be out of date.
         </div>
       )}
-      {!isInstalled && (
+      {!isInstalled && !isNativeApp && (
         <div className="fixed bottom-4 right-4 z-[55]">
           {showHelp && (
             <div role="dialog" aria-label="Install Sacred Seasons" className="mb-3 w-72 rounded-2xl border border-white/10 bg-[#0a1128] p-4 text-sm text-foreground shadow-2xl">
@@ -79,6 +83,14 @@ export function PwaControls() {
                 <h2 className="font-medium">Add Sacred Seasons</h2>
                 <button onClick={() => setShowHelp(false)} aria-label="Close install help" className="rounded p-1 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
               </div>
+              {isAndroid && (
+                <div className="mb-3 rounded-xl border border-[#c9a84c]/20 bg-[#c9a84c]/[0.06] p-3">
+                  <p className="mb-2 text-xs leading-relaxed text-muted-foreground">Prefer a direct Android download? The app connects to the live website and needs internet for pages that aren’t cached.</p>
+                  <a href="https://github.com/tawakkul-ai-dev/sacred-seasons/releases/download/android-latest/sacred-seasons.apk" className="inline-flex items-center gap-2 rounded-lg bg-[#c9a84c] px-3 py-2 text-xs font-medium text-[#050814]" download>
+                    <Download className="h-3.5 w-3.5" /> Download Android APK
+                  </a>
+                </div>
+              )}
               {installPrompt ? (
                 <>
                   <p className="mb-3 text-xs leading-relaxed text-muted-foreground">Install the app for a focused, app-like experience. Your browser will confirm before anything is added.</p>
