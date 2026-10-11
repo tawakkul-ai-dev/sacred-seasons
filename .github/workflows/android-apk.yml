@@ -1,0 +1,91 @@
+name: Android APK
+
+on:
+  pull_request:
+    paths:
+      - "android/**"
+      - ".github/workflows/android-apk.yml"
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK for pull request verification
+        run: gradle --project-dir android --no-daemon :app:assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: sacred-seasons-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+  release:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build and publish signed APK
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEYSTORE_PASSWORD" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_KEY_PASSWORD" ]]; then
+            echo "Android release signing secrets are missing. Configure the four ANDROID_* repository secrets." >&2
+            exit 1
+          fi
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/sacred-seasons-release.p12"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+          gradle --project-dir android --no-daemon :app:verifyReleaseSigning :app:assembleRelease
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          cp "$APK" "$RUNNER_TEMP/sacred-seasons.apk"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          "$APKSIGNER" verify "$RUNNER_TEMP/sacred-seasons.apk"
+          gh release view android-latest >/dev/null 2>&1 || gh release create android-latest --title "Sacred Seasons for Android" --notes "Latest signed Android app. This app opens the live Sacred Seasons website and requires an internet connection for new or uncached pages." --target "$GITHUB_SHA"
+          gh release upload android-latest "$RUNNER_TEMP/sacred-seasons.apk" --clobber
+

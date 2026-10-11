@@ -66,6 +66,10 @@ All Hijri dates are computed at request time (with hourly ISR revalidation) usin
 - "Days until" counts update automatically
 - Month guidance rotates based on the current Hijri month
 
+## Android app download
+
+Android users can download the signed APK directly from the site. The app opens the live website and needs internet access for pages that are not already cached. Direct APK distribution is not an app-store release; Android may ask users to allow installation from their browser. See [Android APK release setup](docs/android-apk.md) for signing and publishing requirements.
+
 ## Deploy
 
 The easiest path is [Vercel](https://vercel.com/new):
